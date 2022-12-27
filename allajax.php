@@ -138,6 +138,7 @@
 	if ($_POST['action'] && $_POST['action'] == 'btn_basc') {
 		$query = "SELECT id,name FROM b";
 		$result = mysqli_query($conn, $query);
+		$rows = array();
 		if ($result) {
 			while ($row = mysqli_fetch_assoc($result)) {
 				$rows[] = $row;
@@ -151,6 +152,7 @@
 	if ($_POST['action'] && $_POST['action'] == 'btn_bdesc') {
 		$query = "SELECT id,name FROM b ORDER BY id DESC";
 		$result = mysqli_query($conn, $query);
+		$rows = array();
 		if ($result) {
 			while ($row = mysqli_fetch_assoc($result)) {
 				$rows[] = $row;
