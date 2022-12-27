@@ -8,10 +8,9 @@
 	$dbname = "phptask";
 
 	//Function to Connect the database
-	$conn = mysqli_connect($host,$username,$password,$dbname);
+	$conn = mysqli_connect($host, $username, $password, $dbname);
 
-	if(!$conn)
-	{
+	if (!$conn) {
 		echo "Connection Could Not Connect";
 	}
 
