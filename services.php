@@ -5,7 +5,6 @@
 function insert($table_name,$fields,$conn)
 {
 	
-	 //include 'config.php';
 	 $col = "insert into $table_name (`".implode("` , `",array_keys($fields))."`)";
      $val = " values('";		
 
