@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Index</title>
+  <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="css/dataTables.bootstrap.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/toastr.min.css"/>
+</head>
+<body>
+ <div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="form-group col-lg-3">
+        <label>A</label>
+        <input
+        type="text"
+        name="a_table"
+        id="a_table"
+        class="form-control"
+        maxlength="255"
+        placeholder="Enter All Data Type Value"
+        />
+      </div>
+      <div class="form-group col-lg-3">
+        <label>B</label>
+        <input
+        type="text"
+        name="b_table"
+        id="b_table"
+        class="form-control"
+        maxlength="11"
+        placeholder="Enter Numeric Value"
+        />
+      </div>
+      <div class="form-group col-lg-3">
+        <label>C</label>
+        <input
+        type="text"
+        name="c_table"
+        id="c_table"
+        class="form-control"
+        maxlength="255"
+        placeholder="Enter All Data Type Value"
+        />
+      </div>
+      <div class="col-lg-2">
+        <label></label>
+        <input
+        type="button"
+        name="submit"
+        value="Save"
+        id="BtnSubmit"
+        class="form-control btn btn-primary"
+        />
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="col-lg-2">
+        <input
+        type="button"
+        name="button1"
+        value="A Data Show"
+        id="BtnA"
+        class="w-100 btn btn-primary"
+        />
+      </div>
+      <div class="col-lg-2">
+        <input
+        type="button"
+        name="button2"
+        value="A,B,C Data Show"
+        id="BtnABC"
+        class="w-100 btn btn-primary"
+        />
+      </div>
+      <div class="col-lg-2">
+        <input
+        type="button"
+        name="button3"
+        value="C,B Data Show"
+        id="BtnCB"
+        class="w-100 btn btn-primary"
+        />
+      </div>
+      <div class="col-lg-2">
+        <input
+        type="button"
+        name="button3"
+        value="B ASC Order Data Show"
+        id="BtnBASC"
+        class="w-100 btn btn-primary"
+        />
+      </div>
+      <div class="col-lg-2">
+        <input
+        type="button"
+        name="button3"
+        value="B DESC Order Data Show"
+        id="BtnBDESC"
+        class="w-100 btn btn-primary"
+        />
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-lg-12">
+      <table class="table table-striped text-center" id="summary-table" style="display: none">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="js/jquery-3.6.3.min.js"></script>
+<script type="text/javascript" src="js/bootstrap.min.js"></script>
+<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="js/dataTables.bootstrap.min.js"></script>
+<script type="text/javascript" src="js/toastr.min.js"></script>
+
+<script type="text/javascript">
+
+      //validation for b fields only number allowed
+    $("#b_table").bind("keyup paste", function () {
+    this.value = this.value.replace(/[^0-9]/g, "");
+        //this.value = this.value.replace(/[^1-9\.]/g,''); for the decimal also
+  });
+
+      //ajax call for the submit button
+    $(document).on('click',"#BtnSubmit",function () {
+    var a_table = $("#a_table").val();
+    var b_table = $("#b_table").val();
+    var c_table = $("#c_table").val();
+    if (a_table || b_table || c_table != "") {
+      $.ajax({
+        type: "POST",
+        url: "allajax.php",
+        data: {
+          action: "add_data",
+          a_table: a_table,
+          b_table: b_table,
+          c_table: c_table,
+        },
+        success: function (data) {
+          var resp = JSON.parse(data);
+          if (resp.value == 1) {
+             toastr.success("Data Inserted Successfully");
+            //alert("Data Inserted Successfully");
+            $("#a_table").val("");
+            $("#b_table").val("");
+            $("#c_table").val("");
+          }
+          else 
+          {
+            toastr.error(resp.error);
+          }
+        },
+      });
+    } else {
+      toastr.error("Please Fill At Least One Fields ");
+      //alert("Please Fill At Least One Fields");
+    }
+  });
+
+      //ajax call for the button A
+    $(document).on('click',"#BtnA",function () {
+   $('#summary-table').DataTable().clear().destroy();
+   $.ajax({
+    type: "POST",
+    url: "allajax.php",
+    data: {
+      action: "btn_a",
+    },
+    success: function (response) {
+      var trHTML = "";
+      var resp = $.parseJSON(response);
+      $.each(resp, function (i, o) {
+        trHTML +=
+        "<tr><td>" + o.id + "</td><td>" + o.name + "</td></tr>";     
+      });
+      $("#summary-table").show();
+      $("#summary-table tbody").append(trHTML);
+      $("#summary-table").DataTable();
+    },
+    error: function (e) {
+      alert('Error');
+    },
+  });
+ });
+
+       //ajax call for the button ABC
+    $(document).on('click',"#BtnABC",function () {
+    $('#summary-table').DataTable().clear().destroy();
+      //$("#summary-table tbody").empty();
+    $.ajax({
+      type: "POST",
+      url: "allajax.php",
+      data: {
+        action: "btn_abc",
+      },
+      success: function (response) {
+        var trHTML = "";
+        var resp = $.parseJSON(response);
+        $.each(resp, function (i, o) {
+          trHTML += "<tr><td>" + o.id + "</td><td>" + o.name + "</td></tr>";
+        });
+
+        $("#summary-table").show();
+        $("#summary-table tbody").append(trHTML);
+        $("#summary-table").DataTable();
+      },
+      error: function (e) {
+        alert('Error');
+      },
+    });
+  });
+
+      //ajax call for the button CB
+    $(document).on('click',"#BtnCB",function () {
+    $('#summary-table').DataTable().clear().destroy();
+    $.ajax({
+      type: "POST",
+      url: "allajax.php",
+      data: {
+        action: "btn_cb",
+      },
+      success: function (response) {
+        var trHTML = "";
+        var resp = $.parseJSON(response);
+        $.each(resp, function (i, o) {
+          trHTML += "<tr><td>" + o.id + "</td><td>" + o.name + "</td></tr>";
+        });
+
+
+        $("#summary-table").show();
+        $("#summary-table tbody").append(trHTML);
+        $("#summary-table").DataTable();
+      },
+      error: function (e) {
+        alert('Error');
+      },
+    });
+  });
+
+      //ajax call for the button BtnBASC
+    $(document).on('click',"#BtnBASC",function () {
+    $('#summary-table').DataTable().clear().destroy();
+
+    $.ajax({
+      type: "POST",
+      url: "allajax.php",
+      data: {
+        action: "btn_basc",
+      },
+      success: function (response) {
+        var trHTML = "";
+        var resp = $.parseJSON(response);
+        $.each(resp, function (i, o) {
+          trHTML += "<tr><td>" + o.id + "</td><td>" + o.name + "</td></tr>";
+        });
+        $("#summary-table").show();
+        $("#summary-table tbody").append(trHTML);
+        $("#summary-table").DataTable();
+      },
+      error: function (e) {
+       alert('Error');
+     },
+   });
+  });
+
+      //ajax call for the button BtnBDESC
+    $(document).on('click',"#BtnBDESC",function () {
+   $('#summary-table').DataTable().clear().destroy();
+
+   $.ajax({
+    type: "POST",
+    url: "allajax.php",
+    data: {
+      action: "btn_bdesc",
+    },
+    success: function (response) {
+      var trHTML = "";
+      var resp = $.parseJSON(response);
+      $.each(resp, function (i, o) {
+        trHTML += "<tr><td>" + o.id + "</td><td>" + o.name + "</td></tr>";
+      });
+
+      $("#summary-table").show();
+      $("#summary-table tbody").append(trHTML);
+          //$("#summary-table").DataTable();
+      $('#summary-table').DataTable({
+        order: [[0, 'desc']]
+      });
+    },
+    error: function (e) {
+      alert('Error');
+    },
+  });
+ });
+
+</script>
+</body>
+</html>
